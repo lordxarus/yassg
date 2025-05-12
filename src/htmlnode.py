@@ -15,12 +15,12 @@ class HTMLNode:
         self.children = children
         self.props = props
 
-    def to_html(self):
+    def to_html(self) -> str:
         raise NotImplemented
 
-    def props_to_html(self):
+    def props_to_html(self) -> str:
         if self.props == None:
-            return {}
+            return ""
 
         return str(
             reduce(
@@ -28,10 +28,10 @@ class HTMLNode:
             )
         )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"HTMLNode({self.tag}, {self.value}, {self.children}, {self.props})"
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return (
             self.tag == other.tag
             and self.value == other.value
