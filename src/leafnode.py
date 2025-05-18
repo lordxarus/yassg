@@ -1,3 +1,4 @@
+from functools import reduce
 from htmlnode import HTMLNode
 
 
@@ -6,6 +7,8 @@ class LeafNode(HTMLNode):
     A leaf node must not have any children and the
     value must not be None
     """
+
+    __name__ = "LeafNode"
 
     def __init__(
         self,
@@ -16,9 +19,12 @@ class LeafNode(HTMLNode):
         super().__init__(tag, value, None, props)
 
     def to_html(self) -> str:
-        if self.value == None:
-            raise ValueError()
-        if self.tag == None:
+
+        if self.value == "":
+            raise ValueError(f"{self.__name__} value must not be empty")
+        if self.value is None:
+            raise ValueError(f"{self.__name__} value must not be None")
+        if self.tag == None or self.tag == "":
             return self.value
 
-        return f"<{self.tag}> {self.value} </{self.tag}>"
+        return f"<{self.tag}{self.props_to_html()}> {self.value} </{self.tag}>"
