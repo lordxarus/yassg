@@ -30,30 +30,28 @@ class TestInternalNode(unittest.TestCase):
         """
 
     def test_to_html_nested_internal(self):
-        print(
-            InternalNode(
-                "html",
-                [
-                    InternalNode(
-                        "body",
-                        [
-                            InternalNode(
-                                "ul",
-                                [
-                                    LeafNode(
-                                        "a",
-                                        "And we... goto the Church",
-                                        {"href": "https://www.oizo3000.com/"},
-                                    ),
-                                    LeafNode("h1", "Maybe we stay in?", None),
-                                ],
-                            )
-                        ],
-                    ),
-                    LeafNode("b", "They're killing us slowly man", None),
-                ],
-            ).to_html()
-        )
+        test = InternalNode(
+            "html",
+            [
+                InternalNode(
+                    "body",
+                    [
+                        InternalNode(
+                            "ul",
+                            [
+                                LeafNode(
+                                    "a",
+                                    "And we... goto the Church",
+                                    {"href": "https://www.oizo3000.com/"},
+                                ),
+                                LeafNode("h1", "Maybe we stay in?", None),
+                            ],
+                        )
+                    ],
+                ),
+                LeafNode("b", "They're killing us slowly man", None),
+            ],
+        ).to_html()
+        truth = '<html> <body> <ul> <a href="https://www.oizo3000.com/"> And we... goto the Church </a> </ul> </body> <b> They\'re killing us slowly man </b> </html>'
 
-
-TestInternalNode("test_to_html_nested_internal").test_to_html_nested_internal()
+        self.assertEqual(test, truth)
