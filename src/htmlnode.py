@@ -1,4 +1,8 @@
 from functools import reduce
+from typing import TypeVar
+
+
+HTMLNodeType = TypeVar("HTMLNodeType", bound="HTMLNode")
 
 
 class HTMLNode:
@@ -7,7 +11,7 @@ class HTMLNode:
         self,
         tag: str | None = None,
         value: str | None = None,
-        children: list["HTMLNode"] | None = None,
+        children: list[HTMLNodeType] | None = None,
         props: dict[str, str] | None = None,
     ):
         self.tag = tag
