@@ -1,4 +1,7 @@
 import unittest
+import sys
+
+sys.path += ["src/"]
 from htmlnode import HTMLNode
 
 
