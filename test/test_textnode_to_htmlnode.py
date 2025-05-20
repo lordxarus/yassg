@@ -1,4 +1,8 @@
 import unittest
+import sys
+
+if not "src/" in sys.path:
+    sys.path += ["src/"]
 from textnode import TextNode, TextType, text_node_to_html_node
 
 

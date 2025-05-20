@@ -1,9 +1,8 @@
 import unittest
 import sys
 
-
-sys.path += ["src/"]
-from htmlnode import HTMLNode
+if not "src/" in sys.path:
+    sys.path += ["src/"]
 from internalnode import InternalNode
 from leafnode import LeafNode
 
