@@ -42,6 +42,7 @@ class TextNode:
         return f"TextNode({self.text}, {self.type.name}, {self.url})"
 
 
+# TODO: make this a method on TextNode?
 def text_node_to_html_node(text_node: TextNode) -> HTMLNode:
     match text_node.type:
         case TextType.TEXT:
@@ -60,3 +61,64 @@ def text_node_to_html_node(text_node: TextNode) -> HTMLNode:
             return LeafNode("img", "", {"alt": text_node.text, "src": text_node.url})
         case _:
             raise ValueError(f"invalid TextType: {text_node.type.name}")
+
+
+# TODO: nested elements e.g: This is an _italic and **bold** word_.
+def split_nodes_delimited(
+    old_nodes: list[TextNode], new_type: TextType, delimiter: str | None = None
+) -> list[TextNode]:
+    # Maybe belongs in TextType? Maybe use __attr__
+    default_delims = {
+        TextType.BOLD: "*",
+        TextType.ITALIC: "_",
+        TextType.CODE: "`",
+        # iffy on this
+        TextType.LINK: "(]",
+        TextType.IMAGE: "[]",
+    }
+    if new_type == TextType.TEXT:
+        return old_nodes
+    if delimiter is None:
+        try:
+            delimiter = default_delims[new_type]
+        except KeyError:
+            raise ValueError("no delimiter given and no known default")
+
+    def process_node(node: TextNode) -> list[TextNode]:
+        if not node.type is TextType.TEXT:
+            return [node]
+        nodes = []
+        last_slc_end_idx = -1
+        is_in_delimiter = False
+        for i, c in enumerate(node.text):
+            if c in delimiter:
+                if is_in_delimiter:
+                    slc = node.text[last_slc_end_idx + 1 : i + 1].strip(delimiter)
+                    nodes.append(TextNode(slc, new_type))
+                    last_slc_end_idx = i
+                    is_in_delimiter = False
+                else:
+                    # This is an _italic_
+                    # This ends _without_ an italic
+                    # This has _two_ _italics_ look!
+                    # This has _one_ italic and one _unterminated delimiter
+                    if i != 0:
+                        slc = node.text[last_slc_end_idx + 1 : i]
+                        nodes.append(TextNode(slc, TextType.TEXT))
+                        last_slc_end_idx = i - 1
+                    is_in_delimiter = True
+            elif i + 1 == len(node.text):
+                if is_in_delimiter:
+                    print(nodes)
+                    nodes[-1] = TextNode(node.text, TextType.TEXT)
+                    print("unterminated delimiter, invalid markdown")
+                else:
+                    slc = node.text[last_slc_end_idx + 1 : i + 1]
+                    nodes.append(TextNode(slc, TextType.TEXT))
+
+        return nodes
+
+    out: list[TextNode] = []
+    for node in old_nodes:
+        out.extend(process_node(node))
+    return out
