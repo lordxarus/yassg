@@ -1,7 +1,8 @@
 import unittest
 import sys
 
-sys.path += ["src/"]
+if "src/" not in sys.path:
+    sys.path += ["src/"]
 from htmlnode import HTMLNode
 
 

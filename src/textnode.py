@@ -54,10 +54,10 @@ def text_node_to_html_node(text_node: TextNode) -> HTMLNode:
         case TextType.CODE:
             return LeafNode("code", text_node.text)
         case TextType.LINK:
-            assert not text_node.url is None
+            assert text_node.url is not None
             return LeafNode("a", text_node.text, {"href": text_node.url})
         case TextType.IMAGE:
-            assert not text_node.url is None
+            assert text_node.url is not None
             return LeafNode("img", "", {"alt": text_node.text, "src": text_node.url})
         case _:
             raise ValueError(f"invalid TextType: {text_node.type.name}")
@@ -85,7 +85,7 @@ def split_nodes_delimited(
             raise ValueError("no delimiter given and no known default")
 
     def process_node(node: TextNode) -> list[TextNode]:
-        if not node.type is TextType.TEXT:
+        if node.type is not TextType.TEXT:
             return [node]
         nodes = []
         last_slc_end_idx = -1
@@ -109,7 +109,6 @@ def split_nodes_delimited(
                     is_in_delimiter = True
             elif i + 1 == len(node.text):
                 if is_in_delimiter:
-                    print(nodes)
                     nodes[-1] = TextNode(node.text, TextType.TEXT)
                     print("unterminated delimiter, invalid markdown")
                 else:

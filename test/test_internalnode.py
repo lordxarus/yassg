@@ -1,7 +1,7 @@
 import unittest
 import sys
 
-if not "src/" in sys.path:
+if "src/" not in sys.path:
     sys.path += ["src/"]
 from internalnode import InternalNode
 from leafnode import LeafNode
