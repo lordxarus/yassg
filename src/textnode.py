@@ -86,6 +86,7 @@ def split_nodes_delimited(
 
     def process_node(node: TextNode) -> list[TextNode]:
         if node.type is not TextType.TEXT:
+            # TODO: Maybe raise an exception here instead?
             return [node]
         nodes = []
         last_slc_end_idx = -1

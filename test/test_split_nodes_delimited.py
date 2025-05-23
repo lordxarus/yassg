@@ -33,8 +33,15 @@ class TestSplitTextDelimited(unittest.TestCase):
 
     def test_unterminated_delim(self):
         test_str = "Netflix u_sed to ship DVDs?"
-        truth = [TextNode("Netflix u_sed to ship DVDs?", tt.TEXT)]
+        truth = [TextNode(test_str, tt.TEXT)]
         self.assertEqual(truth, split_nodes_delimited(truth, tt.ITALIC))
+
+    def test_entire_str_delimited(self):
+        test_str = "_Very italicized_"
+        truth = [TextNode(test_str.strip("_"), tt.ITALIC)]
+        self.assertEqual(
+            truth, split_nodes_delimited([TextNode(test_str, tt.TEXT)], tt.ITALIC)
+        )
 
 
 # TODO:
@@ -42,4 +49,4 @@ class TestSplitTextDelimited(unittest.TestCase):
 #     - images
 #     - probably do left char right char tuple. need to support
 #       non symmetrical delimiters
-TestSplitTextDelimited("test_unterminated_delim").run()
+TestSplitTextDelimited("test_entire_str_delimited").run()
