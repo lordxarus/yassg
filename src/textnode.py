@@ -72,9 +72,6 @@ def split_nodes_delimited(
         TextType.BOLD: "*",
         TextType.ITALIC: "_",
         TextType.CODE: "`",
-        # iffy on this
-        TextType.LINK: "(]",
-        TextType.IMAGE: "[]",
     }
     if new_type == TextType.TEXT:
         return old_nodes
@@ -84,41 +81,31 @@ def split_nodes_delimited(
         except KeyError:
             raise ValueError("no delimiter given and no known default")
 
-    def process_node(node: TextNode) -> list[TextNode]:
+    out: list[TextNode] = []
+    for node in old_nodes:
         if node.type is not TextType.TEXT:
             # TODO: Maybe raise an exception here instead?
             return [node]
-        nodes = []
         last_slc_end_idx = -1
         is_in_delimiter = False
         for i, c in enumerate(node.text):
-            if c in delimiter:
+            if c == delimiter:
                 if is_in_delimiter:
                     slc = node.text[last_slc_end_idx + 1 : i + 1].strip(delimiter)
-                    nodes.append(TextNode(slc, new_type))
+                    out.append(TextNode(slc, new_type))
                     last_slc_end_idx = i
                     is_in_delimiter = False
                 else:
-                    # This is an _italic_
-                    # This ends _without_ an italic
-                    # This has _two_ _italics_ look!
-                    # This has _one_ italic and one _unterminated delimiter
                     if i != 0:
                         slc = node.text[last_slc_end_idx + 1 : i]
-                        nodes.append(TextNode(slc, TextType.TEXT))
+                        out.append(TextNode(slc, TextType.TEXT))
                         last_slc_end_idx = i - 1
                     is_in_delimiter = True
             elif i + 1 == len(node.text):
                 if is_in_delimiter:
-                    nodes[-1] = TextNode(node.text, TextType.TEXT)
+                    out[-1] = TextNode(node.text, TextType.TEXT)
                     print("unterminated delimiter, invalid markdown")
                 else:
                     slc = node.text[last_slc_end_idx + 1 : i + 1]
-                    nodes.append(TextNode(slc, TextType.TEXT))
-
-        return nodes
-
-    out: list[TextNode] = []
-    for node in old_nodes:
-        out.extend(process_node(node))
+                    out.append(TextNode(slc, TextType.TEXT))
     return out
