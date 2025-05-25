@@ -3,8 +3,8 @@ import sys
 
 if "src/" not in sys.path:
     sys.path += ["src/"]
-from textnode import TextNode, split_nodes_delimited
-from textnode import TextType as tt
+from parsemd import split_nodes_delimited
+from textnode import TextNode, TextType as tt
 
 
 class TestSplitTextDelimited(unittest.TestCase):

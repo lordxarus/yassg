@@ -41,71 +41,22 @@ class TextNode:
     def __repr__(self):
         return f"TextNode({self.text}, {self.type.name}, {self.url})"
 
-
-# TODO: make this a method on TextNode?
-def text_node_to_html_node(text_node: TextNode) -> HTMLNode:
-    match text_node.type:
-        case TextType.TEXT:
-            return LeafNode(None, text_node.text)
-        case TextType.BOLD:
-            return LeafNode("b", text_node.text)
-        case TextType.ITALIC:
-            return LeafNode("i", text_node.text)
-        case TextType.CODE:
-            return LeafNode("code", text_node.text)
-        case TextType.LINK:
-            assert text_node.url is not None
-            return LeafNode("a", text_node.text, {"href": text_node.url})
-        case TextType.IMAGE:
-            assert text_node.url is not None
-            return LeafNode("img", "", {"alt": text_node.text, "src": text_node.url})
-        case _:
-            raise ValueError(f"invalid TextType: {text_node.type.name}")
-
-
-# TODO: nested elements e.g: This is an _italic and **bold** word_.
-def split_nodes_delimited(
-    old_nodes: list[TextNode], new_type: TextType, delimiter: str | None = None
-) -> list[TextNode]:
-    # Maybe belongs in TextType? Maybe use __attr__
-    default_delims = {
-        TextType.BOLD: "*",
-        TextType.ITALIC: "_",
-        TextType.CODE: "`",
-    }
-    if new_type == TextType.TEXT:
-        return old_nodes
-    if delimiter is None:
-        try:
-            delimiter = default_delims[new_type]
-        except KeyError:
-            raise ValueError("no delimiter given and no known default")
-
-    out: list[TextNode] = []
-    for node in old_nodes:
-        if node.type is not TextType.TEXT:
-            # TODO: Maybe raise an exception here instead?
-            return [node]
-        last_slc_end_idx = -1
-        is_in_delimiter = False
-        for i, c in enumerate(node.text):
-            if c == delimiter:
-                if is_in_delimiter:
-                    slc = node.text[last_slc_end_idx + 1 : i + 1].strip(delimiter)
-                    out.append(TextNode(slc, new_type))
-                    last_slc_end_idx = i
-                    is_in_delimiter = False
-                else:
-                    if i != 0:
-                        slc = node.text[last_slc_end_idx + 1 : i]
-                        out.append(TextNode(slc, TextType.TEXT))
-                        last_slc_end_idx = i - 1
-                    is_in_delimiter = True
-            elif i + 1 == len(node.text):
-                if is_in_delimiter:
-                    out[-1] = TextNode(node.text, TextType.TEXT)
-                    print("unterminated delimiter, invalid markdown")
-                else:
-                    slc = node.text[last_slc_end_idx + 1 : i + 1]
-                    out.append(TextNode(slc, TextType.TEXT))
-    return out
+    # TODO: make this a method on TextNode?
+    def to_html_node(self) -> HTMLNode:
+        match self.type:
+            case TextType.TEXT:
+                return LeafNode(None, self.text)
+            case TextType.BOLD:
+                return LeafNode("b", self.text)
+            case TextType.ITALIC:
+                return LeafNode("i", self.text)
+            case TextType.CODE:
+                return LeafNode("code", self.text)
+            case TextType.LINK:
+                assert self.url is not None
+                return LeafNode("a", self.text, {"href": self.url})
+            case TextType.IMAGE:
+                assert self.url is not None
+                return LeafNode("img", "", {"alt": self.text, "src": self.url})
+            case _:
+                raise ValueError(f"invalid TextType: {self.type.name}")
