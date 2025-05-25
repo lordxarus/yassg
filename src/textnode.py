@@ -26,9 +26,9 @@ class TextNode:
     type: TextType
     url: str | None
 
-    def __init__(self, text, text_type, url=None):
+    def __init__(self, text: str, type: TextType, url: str | None = None):
         self.text = text
-        self.type = text_type
+        self.type = type
         self.url = url
 
     def __eq__(self, other):
