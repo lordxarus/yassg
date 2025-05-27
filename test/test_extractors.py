@@ -3,7 +3,7 @@ import sys
 
 if "src/" not in sys.path:
     sys.path += ["src/"]
-from parsemd import extract_md_imgs, extract_md_links
+from parser import extract_md_imgs, extract_md_links
 
 
 # TODO: Write more tests!

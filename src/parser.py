@@ -13,7 +13,7 @@ def extract_md_links(md: str) -> list[Tuple]:
     return re.findall(r"\s\[([^\]]*)\]\(([^)]*)\)", md)
 
 
-def split_nodes_image(nodes: list[TextNode]) -> list[TextNode]:
+def parse_image_nodes(nodes: list[TextNode]) -> list[TextNode]:
     new_nodes: list[TextNode] = []
     for node in nodes:
         if node.type is not tt.TEXT:
@@ -30,7 +30,7 @@ def split_nodes_image(nodes: list[TextNode]) -> list[TextNode]:
     return new_nodes
 
 
-def split_nodes_link(nodes: list[TextNode]) -> list[TextNode]:
+def parse_link_nodes(nodes: list[TextNode]) -> list[TextNode]:
     new_nodes: list[TextNode] = []
     for node in nodes:
         if node.type is not tt.TEXT:
@@ -48,7 +48,7 @@ def split_nodes_link(nodes: list[TextNode]) -> list[TextNode]:
 
 
 # TODO: nested elements e.g: This is an _italic and **bold** word_.
-def split_nodes_delimited(
+def parse_inline_nodes(
     old_nodes: list[TextNode], new_type: tt, delimiter: str | None = None
 ) -> list[TextNode]:
     # Maybe belongs in tt? Maybe use __attr__

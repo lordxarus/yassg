@@ -3,7 +3,7 @@ import sys
 
 if "src/" not in sys.path:
     sys.path += ["src/"]
-from parsemd import split_nodes_delimited
+from parser import parse_inline_nodes
 from textnode import TextNode, TextType as tt
 
 
@@ -17,7 +17,7 @@ class TestSplitTextDelimited(unittest.TestCase):
         ]
 
         self.assertEqual(
-            truth, split_nodes_delimited([TextNode(test_str, tt.TEXT)], tt.ITALIC)
+            truth, parse_inline_nodes([TextNode(test_str, tt.TEXT)], tt.ITALIC)
         )
 
     def test_last_char_delim(self):
@@ -28,19 +28,19 @@ class TestSplitTextDelimited(unittest.TestCase):
         ]
 
         self.assertEqual(
-            truth, split_nodes_delimited([TextNode(test_str, tt.TEXT)], tt.ITALIC)
+            truth, parse_inline_nodes([TextNode(test_str, tt.TEXT)], tt.ITALIC)
         )
 
     def test_unterminated_delim(self):
         test_str = "Netflix u_sed to ship DVDs?"
         truth = [TextNode(test_str, tt.TEXT)]
-        self.assertEqual(truth, split_nodes_delimited(truth, tt.ITALIC))
+        self.assertEqual(truth, parse_inline_nodes(truth, tt.ITALIC))
 
     def test_entire_str_delimited(self):
         test_str = "_Very italicized_"
         truth = [TextNode(test_str.strip("_"), tt.ITALIC)]
         self.assertEqual(
-            truth, split_nodes_delimited([TextNode(test_str, tt.TEXT)], tt.ITALIC)
+            truth, parse_inline_nodes([TextNode(test_str, tt.TEXT)], tt.ITALIC)
         )
 
 
