@@ -7,7 +7,7 @@ from parser import parse_inline_nodes
 from textnode import TextNode, TextType as tt
 
 
-class TestSplitTextDelimited(unittest.TestCase):
+class TestParseNodesInline(unittest.TestCase):
 
     def test_first_char_delim(self):
         test_str = "_Netflix_ used to ship DVDs?"
@@ -49,4 +49,4 @@ class TestSplitTextDelimited(unittest.TestCase):
 #     - images
 #     - probably do left char right char tuple. need to support
 #       non symmetrical delimiters
-TestSplitTextDelimited("test_entire_str_delimited").run()
+TestParseNodesInline("test_entire_str_delimited").run()

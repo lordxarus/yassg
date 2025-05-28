@@ -13,6 +13,20 @@ def extract_md_links(md: str) -> list[Tuple]:
     return re.findall(r"\s\[([^\]]*)\]\(([^)]*)\)", md)
 
 
+default_delims = {
+    tt.BOLD: "*",
+    tt.ITALIC: "_",
+    tt.CODE: "`",
+}
+
+
+def parse_nodes(nodes: list[TextNode]) -> list[TextNode]:
+    out: list[TextNode] = nodes
+    for type in default_delims:
+        out = parse_inline_nodes(out, type)
+    return parse_image_nodes(parse_link_nodes(out))
+
+
 def parse_image_nodes(nodes: list[TextNode]) -> list[TextNode]:
     new_nodes: list[TextNode] = []
     for node in nodes:
@@ -42,7 +56,7 @@ def parse_link_nodes(nodes: list[TextNode]) -> list[TextNode]:
         for img in imgs:
             splt: list[str] = working_str.split(f"[{img[0]}]({img[1]})")
             new_nodes.append(TextNode(splt[0], tt.TEXT))
-            new_nodes.append(TextNode(img[0], tt.IMAGE, img[1]))
+            new_nodes.append(TextNode(img[0], tt.LINK, img[1]))
             working_str = splt[1]
     return new_nodes
 
@@ -52,11 +66,6 @@ def parse_inline_nodes(
     old_nodes: list[TextNode], new_type: tt, delimiter: str | None = None
 ) -> list[TextNode]:
     # Maybe belongs in tt? Maybe use __attr__
-    default_delims = {
-        tt.BOLD: "*",
-        tt.ITALIC: "_",
-        tt.CODE: "`",
-    }
     if new_type == tt.TEXT:
         return old_nodes
     if delimiter is None:
