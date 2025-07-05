@@ -20,11 +20,11 @@ are the **MBAs** ok?",
             ),
             TextNode(
                 "For example, [Meta](https://meta.com) just lost 5 out of 13\
-researchers to Mistral",
+ researchers to Mistral",
                 tt.TEXT,
             ),
             TextNode(
-                "Likely, [Mark](https://www.horizont.net/news/media/3/Mark-Zuck\
+                "Likely, ![Mark](https://www.horizont.net/news/media/3/Mark-Zuck\
 erberg-wird-Media-Person-Of-The-Year-26222-detailpp.jpeg) isn't very happy.",
                 tt.TEXT,
             ),
@@ -50,5 +50,11 @@ ark-Zuckerberg-wird-Media-Person-Of-The-Year-26222-detailpp.jpeg",
         ]
         self.assertEqual(truth, parse_nodes(data))
 
-
-TestParseAll("test_parse_all_simple").run()
+    def test_untermed_then_termed(self):
+        test_str = "Netflix u_sed **to** sell DVDs?"
+        truth = [
+            TextNode("Netflix u_sed ", tt.TEXT),
+            TextNode("to", tt.BOLD),
+            TextNode(" sell DVDs?", tt.TEXT),
+        ]
+        self.assertEqual(truth, parse_nodes([TextNode(test_str, tt.TEXT)]))

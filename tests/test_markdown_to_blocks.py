@@ -1,10 +1,10 @@
 import unittest
 import sys
 
-from parser import md_to_blocks
-
 if "src/" not in sys.path:
     sys.path += ["src/"]
+
+from parser import md_to_blocks
 
 
 class TestMarkdownToBlocks(unittest.TestCase):

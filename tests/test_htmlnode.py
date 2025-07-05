@@ -6,7 +6,6 @@ import sys
 if "src/" not in sys.path:
     sys.path += ["src/"]
 
-from leafnode import LeafNode
 from htmlnode import HTMLNode
 
 
