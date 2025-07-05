@@ -33,13 +33,20 @@ class TextNode:
 
     def __eq__(self, other):
         return (
-            self.text == other.text
-            and self.type == other.type
-            and self.url == other.url
+            (
+                self.text == other.text
+                and self.type == other.type
+                and self.url == other.url
+            )
+            if other is not None
+            else False
         )
 
     def __repr__(self):
         return f"TextNode({self.text}, {self.type.name}, {self.url})"
+
+    def __hash__(self):
+        return hash(f"{self.text}{self.type}{self.url}")
 
     # TODO: make this a method on TextNode?
     def to_html_node(self) -> HTMLNode:
