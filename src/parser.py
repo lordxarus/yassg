@@ -11,13 +11,6 @@ default_delims = {
 }
 
 
-def md_to_blocks(md: str) -> list[str]:
-    out = md.split("\n\n")
-    for i in range(len(out)):
-        out[i] = out[i].strip()
-    return out
-
-
 def extract_md_imgs(md: str) -> list[Tuple]:
     return re.findall(r"!\[([^\]]*)\]\(([^)]*)\)", md)
 
