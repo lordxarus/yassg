@@ -1,0 +1,45 @@
+import unittest
+import sys
+
+
+if "src/" not in sys.path:
+    sys.path += ["src/"]
+
+from parser import md_to_html_node
+
+
+class TestMdToHtmlNode(unittest.TestCase):
+    maxDiff = None
+
+    def test_paragraphs(self):
+        md = """
+This is **bolded** paragraph
+text in a p
+tag here
+
+This is another paragraph with _italic_ text and `code` here
+    """
+
+        node = md_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>",
+            html,
+        )
+
+    def test_codeblock(self):
+        md = """```
+This is text that _should_ remain
+the **same** even with inline stuff
+```
+    """
+
+        node = md_to_html_node(md)
+        # print(node.value)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div> <pre> <code> This is text that _should_ remain\nthe **same** even with inline stuff\n </code> </pre> </div>",
+        )
+
+

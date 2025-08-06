@@ -5,7 +5,7 @@ import sys
 
 if "src/" not in sys.path:
     sys.path += ["src/"]
-from parser import parse_nodes
+from parser import md_to_textnode
 from textnode import TextNode, TextType as tt
 
 
@@ -48,7 +48,7 @@ ark-Zuckerberg-wird-Media-Person-Of-The-Year-26222-detailpp.jpeg",
             ),
             TextNode(" isn't very happy.", tt.TEXT),
         ]
-        self.assertEqual(truth, parse_nodes(data))
+        self.assertEqual(truth, md_to_textnode(data))
 
     def test_untermed_then_termed(self):
         test_str = "Netflix u_sed **to** sell DVDs?"
@@ -57,4 +57,4 @@ ark-Zuckerberg-wird-Media-Person-Of-The-Year-26222-detailpp.jpeg",
             TextNode("to", tt.BOLD),
             TextNode(" sell DVDs?", tt.TEXT),
         ]
-        self.assertEqual(truth, parse_nodes([TextNode(test_str, tt.TEXT)]))
+        self.assertEqual(truth, md_to_textnode([TextNode(test_str, tt.TEXT)]))

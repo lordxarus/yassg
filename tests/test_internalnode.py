@@ -35,6 +35,7 @@ class TestInternalNode(unittest.TestCase):
                 InternalNode(
                     "body",
                     [
+                        InternalNode("div", [LeafNode("b", "Didn't expect this")]),
                         InternalNode(
                             "ul",
                             [
@@ -45,12 +46,12 @@ class TestInternalNode(unittest.TestCase):
                                 ),
                                 LeafNode("h1", "Maybe we stay in?", None),
                             ],
-                        )
+                        ),
                     ],
                 ),
                 LeafNode("b", "They're killing us slowly man", None),
             ],
         ).to_html()
-        truth = '<html> <body> <ul> <a href="https://www.oizo3000.com/"> And we... goto the Church </a> </ul> </body> <b> They\'re killing us slowly man </b> </html>'
+        truth = "<html> <body> <div> <b> Didn't expect this </b> </div> <ul> <a href=\"https://www.oizo3000.com/\"> And we... goto the Church </a> </ul> </body> <b> They're killing us slowly man </b> </html>"
 
         self.assertEqual(test, truth)

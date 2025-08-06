@@ -18,7 +18,20 @@ def md_to_blocks(md: str) -> list[str]:
     return out
 
 
-"""Takes a markdown string and returns the BlockType it is 
+def md_to_block_types(md: str) -> list[BlockType]:
+    types = md_to_blocks(md)
+    types = [block_to_block_type(blk) for blk in types]
+    out = []
+    for t in types:
+        if t is not None:
+            out.append(t)
+        else:
+            print("debug: removing None or empty entry in md_to_block_types")
+    print("================")
+    return out
+
+
+"""Takes a markdown string and returns which BlockType it is 
 """
 
 
@@ -37,12 +50,22 @@ def block_to_block_type(md: str) -> BlockType | None:
         case "-":
             return BlockType.UNORDERED_LIST if md[1] == " " else None
         case "`":
+            # check for triple backtick code block
+            # ```
+            # print("Like this")
+            # ```
             if len(md) >= 6 and md[1] == "`" and md[2] == "`":
                 return (
                     BlockType.CODE
                     if md[-1] == "`" and md[-2] == "`" and md[-3] == "`"
                     else BlockType.PARAGRAPH
                 )
+            # check if single backtick / inline code tag
+            elif md[len(md) - 1] == "`":
+                return BlockType.CODE
+            else:
+                return BlockType.PARAGRAPH
+
         case _:
             if not match(r"\d\.", md):
                 return BlockType.PARAGRAPH

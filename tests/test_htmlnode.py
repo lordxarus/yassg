@@ -1,5 +1,4 @@
 import unittest
-import sys
 
 import sys
 
@@ -12,8 +11,8 @@ from htmlnode import HTMLNode
 class TestHTMLNode(unittest.TestCase):
 
     def test_eq(self):
-        one = HTMLNode("b", "This is the text", None, {"nuclear": "salad"})
-        two = HTMLNode("b", "This is the text", None, {"nuclear": "salad"})
+        one = HTMLNode("b", "This is the text", [], {"nuclear": "salad"})
+        two = HTMLNode("b", "This is the text", [], {"nuclear": "salad"})
         three = HTMLNode("b", "This is the text", [one, two], {"nuclear": "salad"})
 
         self.assertEqual(one, two)
@@ -21,10 +20,10 @@ class TestHTMLNode(unittest.TestCase):
 
     def test_repr(self):
 
-        truth = "HTMLNode(b, This is the text, [HTMLNode(b, This is the text, None, {'nuclear': 'salad'}), HTMLNode(b, This is the text, None, {'nuclear': 'salad'})], {'nuclear': 'salad'})"
+        truth = "HTMLNode(b, This is the text, [HTMLNode(b, This is the text, [], {'nuclear': 'salad'}), HTMLNode(b, This is the text, [], {'nuclear': 'salad'})], {'nuclear': 'salad'})"
 
-        one = HTMLNode("b", "This is the text", None, {"nuclear": "salad"})
-        two = HTMLNode("b", "This is the text", None, {"nuclear": "salad"})
+        one = HTMLNode("b", "This is the text", [], {"nuclear": "salad"})
+        two = HTMLNode("b", "This is the text", [], {"nuclear": "salad"})
         three = HTMLNode("b", "This is the text", [one, two], {"nuclear": "salad"})
 
         return self.assertEqual(truth, str(three))
@@ -34,7 +33,7 @@ class TestHTMLNode(unittest.TestCase):
         one = HTMLNode(
             "a",
             "The link!",
-            None,
+            [],
             {"href": "https://www.google.com", "target": "_blank"},
         )
         self.assertEqual(truth, one.props_to_html())
@@ -50,5 +49,5 @@ class TestHTMLNode(unittest.TestCase):
         self.assertEqual(truth, str(one))
 
     def test_empty_props(self):
-        one = HTMLNode("a", "The link!", None, {})
+        one = HTMLNode("a", "The link!", [], {})
         self.assertEqual("", str(one.props_to_html()))

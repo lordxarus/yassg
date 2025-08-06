@@ -1,5 +1,6 @@
+from typing import Sequence
 from functools import reduce
-from htmlnode import HTMLNode, HTMLNodeType
+from htmlnode import HTMLNode
 from leafnode import LeafNode
 
 
@@ -10,7 +11,7 @@ class InternalNode(HTMLNode):
     def __init__(
         self,
         tag: str,
-        children: list[HTMLNodeType],
+        children: Sequence[HTMLNode],
         props: dict[str, str] | None = None,
     ):
         super().__init__(tag, None, children, props)
@@ -30,9 +31,15 @@ class InternalNode(HTMLNode):
         def depth(node) -> str:
             if isinstance(node, LeafNode):
                 return node.to_html()
+            out = f" <{node.tag}{node.props_to_html()}> "
             for c in node.children:
-                return f"<{node.tag}{node.props_to_html()}> {depth(c)} </{node.tag}>"
+                out += depth(c)
+            out += f" </{node.tag}> "
+            return out
 
         out = str(reduce(lambda acc, child: f"{acc}{depth(child)} ", self.children, ""))
 
         return f"<{self.tag}{self.props_to_html()}> {out[:-1]} </{self.tag}>"
+
+    def last_child(self):
+        return self.children[len(self.children) - 1]

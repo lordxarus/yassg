@@ -1,8 +1,12 @@
 import re
-from typing import Tuple
+from typing import Sequence, Tuple
 
-from textnode import TextNode
+from block import md_to_block_types, md_to_blocks, BlockType
+from textnode import TextNode, TextType
 from textnode import TextType as tt
+from htmlnode import HTMLNode
+from leafnode import LeafNode
+from internalnode import InternalNode
 
 default_delims = {
     tt.BOLD: "**",
@@ -16,7 +20,7 @@ def extract_md_imgs(md: str) -> list[Tuple]:
 
 
 def extract_md_links(md: str) -> list[Tuple]:
-    return re.findall(r"\s\[([^\]]*)\]\(([^)]*)\)", md)
+    return re.findall(r"\[([^\]]*)\]\(([^)]*)\)", md)
 
 
 def parse_image_nodes(nodes: list[TextNode]) -> list[TextNode]:
@@ -41,6 +45,8 @@ def parse_image_nodes(nodes: list[TextNode]) -> list[TextNode]:
 def parse_link_nodes(nodes: list[TextNode]) -> list[TextNode]:
     new_nodes: list[TextNode] = []
     for i, node in enumerate(nodes):
+        if node.text[0] == "!":
+            continue
         if node.type is not tt.TEXT:
             new_nodes.append(node)
             continue
@@ -80,6 +86,10 @@ def parse_inline_nodes(
         is_in_delimiter = False
         untermed_idx = -1
         for i, c in enumerate(node.text):
+            # TODO?
+            if c == "*" and len(node.text) - 1 < i + 1:
+                print("debug: detected a closing bold asterisk at the end of a node")
+                continue
             if c == "*" and node.text[i + 1] != "*" and i + 1 != len(node.text):
                 continue
             if c in delimiter:
@@ -115,8 +125,8 @@ def parse_inline_nodes(
     return out
 
 
-def parse_nodes(nodes: list[TextNode]) -> list[TextNode | None]:
-    out: list[TextNode | None] = []
+def md_to_textnode(nodes: Sequence[TextNode]) -> list[TextNode]:
+    out: list[TextNode] = []
     for node in nodes:
         for type in default_delims:
             parsed: list[TextNode] = parse_inline_nodes([node], type)
@@ -137,4 +147,136 @@ def parse_nodes(nodes: list[TextNode]) -> list[TextNode | None]:
             for parsed_node in parsed:
                 if parsed_node not in out:
                     out.append(parsed_node)
-    return out
+    return out if len(out) > 0 else list(nodes)
+
+
+def md_to_html_node(md: str) -> InternalNode:
+    block_types = md_to_block_types(md)
+    blocks = md_to_blocks(md)
+    root = InternalNode("div", [])
+
+    if len(blocks) == 0:
+        return root
+    for i, blk in enumerate(blocks):
+        match block_types[i]:
+            case BlockType.PARAGRAPH:
+                root.children.append(InternalNode("p", []))
+            case BlockType.HEADING:
+                blk = blk.replace("#", "")
+                blk = blk.lstrip("\n")
+                h_cnt = 0
+                for c in blk:
+                    if c == "#":
+                        h_cnt += 1
+                    else:
+                        break
+                root.children.append(InternalNode(f"h{h_cnt}", []))
+            case BlockType.CODE:
+                blk = blk.replace("`", "")
+                blk = blk.lstrip("\n")
+                root.children.append(InternalNode("pre", [LeafNode("code", blk)]))
+            case BlockType.QUOTE:
+                blk = blk.replace(r"^>", "")
+                blk = blk.lstrip("\n")
+                root.children.append(InternalNode("blockquote", []))
+            case BlockType.UNORDERED_LIST:
+
+                items = blk.split(
+                    "\n- ",
+                )
+                items[0] = items[0][2:]
+
+                list_node = InternalNode("ul", [])
+
+                for item in items:
+                    nodes = [
+                        it.to_html_node()
+                        for it in md_to_textnode([TextNode(item, TextType.TEXT)])
+                    ]
+                    # nodes = md_to_textnode([TextNode(item, TextType.TEXT)])
+                    list_item = InternalNode("li", nodes)
+                    list_node.children.append(list_item)
+
+                root.children.append(list_node)
+
+                # for ln in lns:
+                #     if ln.startswith("-"):
+                #         if list_item.value != "" and list_item.value is not None:
+                #             txt_nodes = md_to_textnode(
+                #                 [TextNode(list_item.value, TextType.TEXT)]
+                #             )
+                #             if len(txt_nodes) > 0:
+                #                 for txt_node in txt_nodes:
+                #                     list_item.children.append(txt_node.to_html_node())
+                #             list_node.children.append(list_item)
+                #             list_item = InternalNode("li", [])
+                #             list_item.value = ""
+                #         # reset list_item
+                #         else:
+                #             list_item = InternalNode("li", [])
+                #             list_item.value = ln[1:]
+
+                #     else:
+                #         if list_item.value is None:
+                #             list_item.value = ln
+                #         else:
+                #             list_item.value += f"\n{ln}"
+
+            case BlockType.ORDERED_LIST:
+
+                items = blk.split(
+                    "\n- ",
+                )
+                items[0] = items[0][2:]
+
+                list_node = InternalNode("ol", [])
+
+                for item in items:
+                    nodes = [
+                        it.to_html_node()
+                        for it in md_to_textnode([TextNode(item, TextType.TEXT)])
+                    ]
+                    # nodes = md_to_textnode([TextNode(item, TextType.TEXT)])
+                    list_item = InternalNode("li", nodes)
+                    list_node.children.append(list_item)
+
+                root.children.append(list_node)
+
+                # for ln in lns:
+                #     if ln.startswith("-"):
+                #         if list_item.value != "" and list_item.value is not None:
+                #             txt_nodes = md_to_textnode(
+                #                 [TextNode(list_item.value, TextType.TEXT)]
+                #             )
+                #             if len(txt_nodes) > 0:
+                #                 for txt_node in txt_nodes:
+                #                     list_item.children.append(txt_node.to_html_node())
+                #             list_node.children.append(list_item)
+                #             list_item = InternalNode("li", [])
+                #             list_item.value = ""
+                #         # reset list_item
+                #         else:
+                #             list_item = InternalNode("li", [])
+                #             list_item.value = ln[1:]
+
+                #     else:
+                #         if list_item.value is None:
+                #             list_item.value = ln
+                #         else:
+                #             list_item.value += f"\n{ln}"
+
+            case _:
+                print(f"error: invalid block\n\n {blk}")
+                exit(-1)
+        if (
+            block_types[i] != BlockType.CODE
+            and block_types[i] != BlockType.UNORDERED_LIST
+        ):
+            for txt_node in md_to_textnode([TextNode(blk, TextType.TEXT)]):
+                root.last_child().children.append(txt_node.to_html_node())
+    return root
+
+
+def md_to_html(md: str) -> str:
+    node = md_to_html_node(md)
+    return node.to_html()

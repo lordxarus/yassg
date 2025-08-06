@@ -48,7 +48,6 @@ class TextNode:
     def __hash__(self):
         return hash(f"{self.text}{self.type}{self.url}")
 
-    # TODO: make this a method on TextNode?
     def to_html_node(self) -> HTMLNode:
         match self.type:
             case TextType.TEXT:

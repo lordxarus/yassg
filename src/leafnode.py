@@ -1,4 +1,3 @@
-from functools import reduce
 from htmlnode import HTMLNode
 
 
@@ -16,12 +15,14 @@ class LeafNode(HTMLNode):
         value: str,
         props: dict[str, str] | None = None,
     ):
-        super().__init__(tag, value, None, props)
+        super().__init__(tag, value, [], props)
 
     def to_html(self) -> str:
 
-        if self.value == "":
-            raise ValueError(f"{self.__name__} value must not be empty")
+        # if self.value == "":
+            # import pdb
+            # pdb.set_trace()
+            # raise ValueError(f"{self.__name__} value must not be empty")
         if self.value is None:
             raise ValueError(f"{self.__name__} value must not be None")
         if self.tag == None or self.tag == "":

@@ -1,8 +1,6 @@
+from __future__ import annotations
 from functools import reduce
-from typing import TypeVar
-
-
-HTMLNodeType = TypeVar("HTMLNodeType", bound="HTMLNode")
+from typing import Sequence
 
 
 class HTMLNode:
@@ -11,16 +9,16 @@ class HTMLNode:
         self,
         tag: str | None = None,
         value: str | None = None,
-        children: list[HTMLNodeType] | None = None,
+        children: Sequence[HTMLNode] = [],
         props: dict[str, str] | None = None,
     ):
         self.tag = tag
         self.value = value
-        self.children = children
+        self.children: list[HTMLNode] = list(children)
         self.props = props
 
     def to_html(self) -> str:
-        raise NotImplemented
+        raise NotImplementedError
 
     def props_to_html(self) -> str:
         if self.props == None:
