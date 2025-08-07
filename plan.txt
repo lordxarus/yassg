@@ -1,7 +1,0 @@
-ctx:
-	- tests failing and I want to rewrite the code anyway it looks like a mess
-	- need to get a conceptual overview again. map out input and output for each
-	  test
-
-- verify tests are correct
-- rewrite parser functions and get tests passing
