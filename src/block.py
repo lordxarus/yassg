@@ -1,6 +1,10 @@
 from enum import Enum
 from re import match
 
+import logger
+
+print_dbg = logger.get_print_dbg()
+
 
 class BlockType(Enum):
     PARAGRAPH = 1
@@ -26,8 +30,7 @@ def md_to_block_types(md: str) -> list[BlockType]:
         if t is not None:
             out.append(t)
         else:
-            print("debug: removing None or empty entry in md_to_block_types")
-    print("================")
+            print_dbg("removing None or empty entry in md_to_block_types")
     return out
 
 

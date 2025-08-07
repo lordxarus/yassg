@@ -2,6 +2,7 @@ import re
 from typing import Sequence, Tuple
 
 from block import md_to_block_types, md_to_blocks, BlockType
+import logger
 from textnode import TextNode, TextType
 from textnode import TextType as tt
 from htmlnode import HTMLNode
@@ -13,6 +14,8 @@ default_delims = {
     tt.ITALIC: "_",
     tt.CODE: "`",
 }
+
+print_dbg = logger.get_print_dbg()
 
 
 def extract_md_imgs(md: str) -> list[Tuple]:
@@ -88,7 +91,7 @@ def parse_inline_nodes(
         for i, c in enumerate(node.text):
             # TODO?
             if c == "*" and len(node.text) - 1 < i + 1:
-                print("debug: detected a closing bold asterisk at the end of a node")
+                print_dbg("detected a closing bold asterisk at the end of a node")
                 continue
             if c == "*" and node.text[i + 1] != "*" and i + 1 != len(node.text):
                 continue

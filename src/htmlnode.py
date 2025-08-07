@@ -1,6 +1,6 @@
 from __future__ import annotations
 from functools import reduce
-from typing import Sequence
+from typing import Self, Sequence
 
 
 class HTMLNode:
@@ -9,18 +9,18 @@ class HTMLNode:
         self,
         tag: str | None = None,
         value: str | None = None,
-        children: Sequence[HTMLNode] = [],
+        children: Sequence[Self] = [],
         props: dict[str, str] | None = None,
     ):
         self.tag = tag
         self.value = value
-        self.children: list[HTMLNode] = list(children)
+        self.children: list[Self] = list(children)
         self.props = props
 
-    def to_html(self) -> str:
+    def to_html(self: Self) -> str:
         raise NotImplementedError
 
-    def props_to_html(self) -> str:
+    def props_to_html(self: Self) -> str:
         if self.props == None:
             return ""
 
@@ -30,10 +30,10 @@ class HTMLNode:
             )
         )
 
-    def __repr__(self) -> str:
+    def __repr__(self: Self) -> str:
         return f"HTMLNode({self.tag}, {self.value}, {self.children}, {self.props})"
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self: Self, other) -> bool:
         return (
             self.tag == other.tag
             and self.value == other.value
