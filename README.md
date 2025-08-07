@@ -13,3 +13,4 @@ Set DEBUG in your environment to true to see more informative messages
 TODO:
  - Configurable directories
 
+Inspired by the [boot.dev](https://boot.dev) static site generator project
