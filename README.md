@@ -1,7 +1,7 @@
 ## Yet Another Static Site Generator
 
 ### Usage:
-`yassg source_dir [out_dir]`
+`yassg source_dir [out_dir]`\n
 Example:
 `yassg test_site && python -m http.server -d public`
  
