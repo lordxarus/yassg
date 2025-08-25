@@ -6,7 +6,7 @@
 
  - `out_dir` is `public/` by default
 
-Any markdown files placed in `source_dir/content/` will be converted to HTML. everything in `source_dir/static/` is copied over as if by running `cp -r source_dir/static/. out_dir/`
+Any Markdown files placed in `source_dir/content/` will be converted to HTML. Everything in `source_dir/static/` is copied to `out_dir/`
 
 
 Example:
