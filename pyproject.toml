@@ -20,3 +20,6 @@ license-files = ["LICEN[CS]E*"]
 
 [project.urls]
 Issues = "https://github.com/lordxarus/yassg/issues"
+
+[project.scripts]
+yassg = "yassg:cli.main"
