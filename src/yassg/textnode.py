@@ -60,5 +60,3 @@ class TextNode:
             case TextType.IMAGE:
                 assert self.url is not None
                 return LeafNode("img", "", {"alt": self.text, "src": self.url})
-            case _:
-                raise ValueError(f"invalid TextType: {self.type.name}")
