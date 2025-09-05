@@ -1,12 +1,10 @@
 import shutil
-from copy import deepcopy
-import subprocess
 import sys
 import os
 from pathlib import Path
 
-import logger
-from parser import md_to_html
+from yassg import logger
+from yassg.parser import md_to_html
 
 default_mappings = {"static": "", "content": ""}
 

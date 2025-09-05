@@ -1,13 +1,12 @@
 import re
 from typing import Sequence, Tuple
 
-from block import md_to_block_types, md_to_blocks, BlockType
-import logger
-from textnode import TextNode, TextType
-from textnode import TextType as tt
-from htmlnode import HTMLNode
-from leafnode import LeafNode
-from internalnode import InternalNode
+from yassg.block import md_to_block_types, md_to_blocks, BlockType
+from yassg import logger
+from yassg.textnode import TextNode, TextType
+from yassg.textnode import TextType as tt
+from yassg.leafnode import LeafNode
+from yassg.internalnode import InternalNode
 
 default_delims = {
     tt.BOLD: "**",
