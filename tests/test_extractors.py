@@ -1,9 +1,6 @@
 import unittest
-import sys
 
-if "src/" not in sys.path:
-    sys.path += ["src/"]
-from parser import extract_md_imgs, extract_md_links
+from yassg.parser import extract_md_imgs, extract_md_links
 
 
 # TODO: Write more tests!

@@ -1,10 +1,7 @@
 import unittest
-import sys
 
-if "src/" not in sys.path:
-    sys.path += ["src/"]
-from internalnode import InternalNode
-from leafnode import LeafNode
+from yassg.internalnode import InternalNode
+from yassg.leafnode import LeafNode
 
 
 class TestInternalNode(unittest.TestCase):

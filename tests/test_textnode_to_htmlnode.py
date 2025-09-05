@@ -1,9 +1,6 @@
 import unittest
-import sys
 
-if "src/" not in sys.path:
-    sys.path += ["src/"]
-from textnode import TextNode, TextType
+from yassg.textnode import TextNode, TextType
 
 
 class TestTextNodeToHtmlNode(unittest.TestCase):
