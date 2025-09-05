@@ -1,4 +1,4 @@
 __pycache__/
 public/
 dist/
-yassg.egg-info/
+*egg-info/
