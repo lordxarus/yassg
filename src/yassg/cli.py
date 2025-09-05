@@ -6,9 +6,29 @@ from pathlib import Path
 from yassg import logger
 from yassg.parser import md_to_html
 
-default_mappings = {"static": "", "content": ""}
+import argparse
 
 print_dbg = logger.get_print_dbg()
+
+
+def crawl_md(path: Path) -> dict[Path, str]:
+    out: dict[Path, str] = {}
+
+    p: Path = Path(path)
+
+    files: list[Path] = [
+        item for item in p.iterdir() if item.is_file() and item.name.endswith(".md")
+    ]
+
+    for file in files:
+        lines = md_to_html(file.read_text())
+        # remove src dir e.g. test_site/index.md -> index.md
+        out[file] = lines
+
+    dirs: list[Path] = [it for it in p.iterdir() if it.is_dir()]
+    for dir in dirs:
+        out.update(crawl_md(dir))
+    return out
 
 
 def extract_title(ln: str) -> str:
@@ -17,29 +37,11 @@ def extract_title(ln: str) -> str:
     return ln[1:]
 
 
-
-def main():
-    if len(sys.argv) < 2:
-        print("usage: yassg <source dir or file> [output dir]")
-        exit(22)
-    elif sys.argv[1] == "-h" or sys.argv[1] == "--help":
-        print("usage: yassg <source dir or file> [output dir]\n")
-        print("source dir must have directories static and content\n")
-        exit(0)
-
-    tmpl_path = Path("template.html")
-
+def build(in_dir, out_dir, tmpl_path):
     if not tmpl_path.exists():
-        print(f"error: template not found at {tmpl_path}/")
+        print(f'error: template not found at "{tmpl_path}"')
         exit(-1)
-    tmpl = tmpl_path.read_text()
 
-    in_dir = Path(sys.argv[1])
-    default_mappings[in_dir.as_posix()] = ""
-    out_dir: Path = Path("public")
-
-    if len(sys.argv) > 2:
-        out_dir = Path(sys.argv[2])
     if out_dir.exists():
         shutil.rmtree(out_dir)
         os.mkdir(out_dir)
@@ -52,43 +54,54 @@ def main():
 
     content_dir_in = in_dir.joinpath(Path("content"))
     if not content_dir_in.exists():
-        print(f"error: content directory {content_dir_in}/ not found")
+        print(f'error: content directory "{content_dir_in}" not found')
         exit(-1)
     if len(list(content_dir_in.iterdir())) == 0:
-        print(f"error: no content files found in {content_dir_in}/")
+        print(f'error: no content files found in "{content_dir_in}"')
         exit(-1)
 
-    def crawl_md(path: Path) -> dict[Path, str]:
-        out: dict[Path, str] = {}
+    crawled_paths = crawl_md(content_dir_in).items()
+    rel_paths = [
+        (path.relative_to(content_dir_in), html) for path, html in crawled_paths
+    ]
 
-        p: Path = Path(path)
-
-        files: list[Path] = [
-            item for item in p.iterdir() if item.is_file() and item.name.endswith(".md")
-        ]
-
-        for file in files:
-            lines = md_to_html(file.read_text())
-            # remove src dir e.g. test_site/index.md -> index.md
-            out[file.relative_to(content_dir_in)] = lines
-
-        dirs: list[Path] = [it for it in p.iterdir() if it.is_dir()]
-        for dir in dirs:
-            out.update(crawl_md(dir))
-        return out
-
-    for rel_file_path, html in crawl_md(content_dir_in).items():
-        to_path = out_dir / rel_file_path
+    for rel_path, html in rel_paths:
+        to_path = out_dir / rel_path
         to_path.parent.mkdir(parents=True, exist_ok=True)
 
-        src_path = (content_dir_in / rel_file_path)
+        src_path = content_dir_in / rel_path
         md_content = src_path.read_text()
         title = extract_title(md_content.splitlines()[0])
         title = title[1:] if title[0] == " " else title
 
-        output = tmpl_path.read_text().replace("{{ Title }}", title).replace("{{ Content }}", html)
+        output = (
+            tmpl_path.read_text()
+            .replace("{{ Title }}", title)
+            .replace("{{ Content }}", html)
+        )
         print(f"generating {to_path.with_suffix(".html")} from {src_path}")
         to_path.with_suffix(".html").write_text(output)
+
+
+def main():
+
+    parser = argparse.ArgumentParser(
+        prog="yassg",
+        description="Create a static website from simple markdown\
+                         and static files",
+    )
+
+    parser.add_argument("source_dir")
+    parser.add_argument("--output_dir", default=Path("public"), required=False)
+    parser.add_argument("--tmpl_path", default=Path("template.html"), required=False)
+
+    args = parser.parse_args()
+
+    tmpl_path = Path(args.tmpl_path)
+    in_dir = Path(args.source_dir)
+    out_dir = Path(args.output_dir)
+
+    build(in_dir, out_dir, tmpl_path)
 
 
 if __name__ == "__main__":
