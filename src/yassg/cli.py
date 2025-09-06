@@ -1,5 +1,4 @@
 import shutil
-import sys
 import os
 from pathlib import Path
 
@@ -11,33 +10,45 @@ import argparse
 print_dbg = logger.get_print_dbg()
 
 
-def crawl_md(path: Path) -> dict[Path, str]:
-    out: dict[Path, str] = {}
+def crawl_md(path: Path) -> list[Path]:
+    out: list[Path] = []
 
-    p: Path = Path(path)
-
-    files: list[Path] = [
-        item for item in p.iterdir() if item.is_file() and item.name.endswith(".md")
+    out += [
+        item for item in path.iterdir() if item.is_file() and item.name.endswith(".md")
     ]
 
-    for file in files:
-        lines = md_to_html(file.read_text())
-        # remove src dir e.g. test_site/index.md -> index.md
-        out[file] = lines
+    dirs: list[Path] = [it for it in path.iterdir() if it.is_dir()]
 
-    dirs: list[Path] = [it for it in p.iterdir() if it.is_dir()]
     for dir in dirs:
-        out.update(crawl_md(dir))
+        out += crawl_md(dir)
+
     return out
 
 
-def extract_title(ln: str) -> str:
-    if ln[0] != "#":
-        raise ValueError(f"looking for # got {ln[0]}")
-    return ln[1:]
+def convert_to_html(files: list[Path]) -> list[tuple[Path, str]]:
+    out: list[tuple[Path, str]] = []
+    for file in files:
+        out.append((file, md_to_html(file.read_text())))
+    return out
 
 
-def build(in_dir, out_dir, tmpl_path):
+def extract_title(file: Path) -> str:
+    lns: str
+    first_ln: str
+    try:
+        lns = file.read_text()
+    except OSError as e:
+        print(f"error reading {file.name}: {e.strerror}")
+        return ""
+    try:
+        first_ln = lns.splitlines()[0]
+    except IndexError:
+        return ""
+
+    return first_ln[1:] if first_ln[0] == "#" else file.name
+
+
+def dir_setup(in_dir, out_dir, tmpl_path):
     if not tmpl_path.exists():
         print(f'error: template not found at "{tmpl_path}"')
         exit(-1)
@@ -49,38 +60,51 @@ def build(in_dir, out_dir, tmpl_path):
         os.mkdir(out_dir)
 
     static_dir_in = in_dir / "static"
-    if static_dir_in.exists():
-        shutil.copytree(static_dir_in, out_dir, dirs_exist_ok=True)
+    if not static_dir_in.exists():
+        print(f'error: content directory "{static_dir_in}" not found')
+        exit(-1)
 
-    content_dir_in = in_dir.joinpath(Path("content"))
+    content_dir_in = in_dir / "content"
     if not content_dir_in.exists():
         print(f'error: content directory "{content_dir_in}" not found')
         exit(-1)
+
     if len(list(content_dir_in.iterdir())) == 0:
         print(f'error: no content files found in "{content_dir_in}"')
         exit(-1)
 
-    crawled_paths = crawl_md(content_dir_in).items()
-    rel_paths = [
-        (path.relative_to(content_dir_in), html) for path, html in crawled_paths
-    ]
 
+def replace_placeholders(tmpl, title, content) -> str:
+    return tmpl.replace("{{ Title }}", title).replace("{{ Content }}", content)
+
+
+def build(in_dir, out_dir, tmpl_path):
+    dir_setup(in_dir, out_dir, tmpl_path)
+
+    # we know that these are existent and accessible because we
+    # just called dir_setup
+    content_dir_in = in_dir / "content"
+
+    shutil.copytree(in_dir / "static", out_dir, dirs_exist_ok=True)
+
+    crawled_files = crawl_md(content_dir_in)
+    converted_files = convert_to_html(crawled_files)
+
+    rel_paths = [
+        (path.relative_to(content_dir_in), html) for path, html in converted_files
+    ]
+    tmpl = tmpl_path.read_text()
     for rel_path, html in rel_paths:
         to_path = out_dir / rel_path
         to_path.parent.mkdir(parents=True, exist_ok=True)
 
         src_path = content_dir_in / rel_path
-        md_content = src_path.read_text()
-        title = extract_title(md_content.splitlines()[0])
-        title = title[1:] if title[0] == " " else title
+        title = extract_title(src_path)
 
-        output = (
-            tmpl_path.read_text()
-            .replace("{{ Title }}", title)
-            .replace("{{ Content }}", html)
-        )
+        final_output = replace_placeholders(tmpl, title, html)
+
         print(f"generating {to_path.with_suffix(".html")} from {src_path}")
-        to_path.with_suffix(".html").write_text(output)
+        to_path.with_suffix(".html").write_text(final_output)
 
 
 def main():
