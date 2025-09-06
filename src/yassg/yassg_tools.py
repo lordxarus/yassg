@@ -46,7 +46,7 @@ def extract_title(file: Path) -> str | None:
         logger.warning(f"found {file.name} to be empty in extract_title")
         return None
 
-    return first_ln[1:] if first_ln[0] == "#" else None
+    return first_ln[1:] if first_ln and first_ln[0] == "#" else None
 
 
 def dir_setup(in_dir: Path, out_dir: Path, tmpl: Path):
