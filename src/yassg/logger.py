@@ -1,7 +1,7 @@
-from typing import Self
 import os
 
 
+# TODO: use logging package
 def get_print_dbg(debug_env_var="DEBUG", debug_prefix="debug: "):
     debug: bool = False
     try:
@@ -9,7 +9,7 @@ def get_print_dbg(debug_env_var="DEBUG", debug_prefix="debug: "):
         if env_var == "true" or env_var == "1":
             debug = True
     except KeyError:
-        ()
+        pass
 
     def print_dbg(txt: str):
         if debug:

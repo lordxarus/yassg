@@ -1,7 +1,7 @@
 from enum import Enum
 from re import match
 
-import logger
+from yassg import logger
 
 print_dbg = logger.get_print_dbg()
 

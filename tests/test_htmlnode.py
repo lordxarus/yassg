@@ -1,11 +1,7 @@
 import unittest
 
-import sys
 
-if "src/" not in sys.path:
-    sys.path += ["src/"]
-
-from htmlnode import HTMLNode
+from yassg.htmlnode import HTMLNode
 
 
 class TestHTMLNode(unittest.TestCase):

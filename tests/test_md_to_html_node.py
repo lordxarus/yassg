@@ -1,11 +1,6 @@
 import unittest
-import sys
 
-
-if "src/" not in sys.path:
-    sys.path += ["src/"]
-
-from parser import md_to_html_node
+from yassg.parser import md_to_html_node
 
 
 class TestMdToHtmlNode(unittest.TestCase):
@@ -41,5 +36,3 @@ the **same** even with inline stuff
             html,
             "<div> <pre> <code> This is text that _should_ remain\nthe **same** even with inline stuff\n </code> </pre> </div>",
         )
-
-

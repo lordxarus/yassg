@@ -1,10 +1,7 @@
 import unittest
-import sys
 
-if "src/" not in sys.path:
-    sys.path += ["src/"]
-from parser import parse_inline_nodes
-from textnode import TextNode, TextType as tt
+from yassg.parser import parse_inline_nodes
+from yassg.textnode import TextNode, TextType as tt
 
 
 class TestParseNodesInline(unittest.TestCase):

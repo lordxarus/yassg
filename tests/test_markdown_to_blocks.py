@@ -1,11 +1,7 @@
 import unittest
-import sys
 
-if "src/" not in sys.path:
-    sys.path += ["src/"]
-
-from block import block_to_block_type, BlockType
-from block import md_to_blocks
+from yassg.block import block_to_block_type, BlockType
+from yassg.block import md_to_blocks
 
 
 class TestMarkdownToBlocks(unittest.TestCase):

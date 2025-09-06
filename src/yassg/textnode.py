@@ -1,11 +1,7 @@
 from enum import Enum
 
-import sys
-
-sys.path += ["src"]
-
-from htmlnode import HTMLNode
-from leafnode import LeafNode
+from yassg.htmlnode import HTMLNode
+from yassg.leafnode import LeafNode
 
 """
 Represents an "interface," so to speak, between the Markdown and HTML representations 
@@ -65,4 +61,4 @@ class TextNode:
                 assert self.url is not None
                 return LeafNode("img", "", {"alt": self.text, "src": self.url})
             case _:
-                raise ValueError(f"invalid TextType: {self.type.name}")
+                raise ValueError(f"Unsupported TextType: {self.type}")

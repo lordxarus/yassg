@@ -1,4 +1,4 @@
-from htmlnode import HTMLNode
+from yassg.htmlnode import HTMLNode
 
 
 class LeafNode(HTMLNode):
@@ -18,11 +18,6 @@ class LeafNode(HTMLNode):
         super().__init__(tag, value, [], props)
 
     def to_html(self) -> str:
-
-        # if self.value == "":
-            # import pdb
-            # pdb.set_trace()
-            # raise ValueError(f"{self.__name__} value must not be empty")
         if self.value is None:
             raise ValueError(f"{self.__name__} value must not be None")
         if self.tag == None or self.tag == "":

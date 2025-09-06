@@ -1,7 +1,7 @@
 from typing import Sequence
 from functools import reduce
-from htmlnode import HTMLNode
-from leafnode import LeafNode
+from yassg.htmlnode import HTMLNode
+from yassg.leafnode import LeafNode
 
 
 class InternalNode(HTMLNode):
