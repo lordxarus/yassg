@@ -5,6 +5,8 @@ from yassg.yassg_tools import build
 import argparse
 import logging
 
+import sys
+
 logger = logging.getLogger(__name__)
 
 
@@ -36,6 +38,7 @@ def main():
         build(in_dir, out_dir, tmpl_path)
     except (OSError, FileNotFoundError, PermissionError) as e:
         logger.critical(f"failed to build {e}")
+        sys.exit(-1)
 
 
 if __name__ == "__main__":
