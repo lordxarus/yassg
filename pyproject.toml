@@ -34,3 +34,6 @@ yassg = "yassg.cli:main"
 testpaths = [
   "tests",
 ]
+
+[tool.setuptools.package-data]
+yassg = ["templates/*.html"]
