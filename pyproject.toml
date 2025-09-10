@@ -18,8 +18,19 @@ classifiers = [
 license = "MIT"
 license-files = ["LICEN[CS]E*"]
 
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "beautifulsoup4",
+]
+
 [project.urls]
 Issues = "https://github.com/lordxarus/yassg/issues"
 
 [project.scripts]
-yassg = "yassg:cli.main"
+yassg = "yassg.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = [
+  "tests",
+]
