@@ -37,3 +37,6 @@ testpaths = [
 
 [tool.setuptools.package-data]
 yassg = ["templates/*.html"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
